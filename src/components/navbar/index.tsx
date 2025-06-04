@@ -15,6 +15,7 @@ const Navbar = () => {
           <img src={Logout} alt="" width={20} height={16} />
           <p>Cút</p>
           <p>OK</p>
+          <p>HUHU</p>
         </div>
       </div>
     )
