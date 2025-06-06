@@ -1,12 +1,12 @@
 import React from "react";
+import Brand from "../../components/brand";
+import HotProducts from "../../components/hot-products";
 
 const Home = () => {
     return (
-        <div>
-            <h1>Home </h1>
-            <h1 className="text-3xl font-bold underline text-red-700">
-      Hello world!
-    </h1>
+        <div className="pt-10">
+            <Brand />
+            <HotProducts />
         </div>
     )
 }
