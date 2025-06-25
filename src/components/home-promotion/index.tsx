@@ -3,7 +3,7 @@ import React from "react";
 const HomePromotion = () => {
   return(
     <div className="relative my-12">
-      <img src="https://cdn.tgdd.vn/Files/2018/11/27/1134121/bannerlaptopthang12_800x450.png" alt="" className="w-full h-80 object-fill object-top rounded-2xl" />
+      <img src="https://cdn.tgdd.vn/Files/2018/11/27/1134121/bannerlaptopthang12_800x450.png" alt="" className="w-full h-80 object-cover object-top rounded-2xl" />
       <div className="absolute top-[25%] px-8 py-6">
         <h2 className="text-white font-bold text-2xl">Siêu khuyến mãi tháng 7</h2>
         <p className="text-white text-lg my-4">Giảm đến 30% cho tất cả laptop gaming và văn phòng. Số lượng có hạn!</p>

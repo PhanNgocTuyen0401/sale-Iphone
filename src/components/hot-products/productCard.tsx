@@ -1,14 +1,6 @@
 import React from "react";
 import { ShoppingCartOutlined } from "@ant-design/icons";
-
-interface IHotProduct {
-    name: string;
-    image: string;
-    discount: number;
-    price: number;
-    oldPrice: number;
-    isHot: boolean;
-}
+import { IHotProduct } from "./hotProduct.interface";
 
 interface Props {
     item: IHotProduct,
