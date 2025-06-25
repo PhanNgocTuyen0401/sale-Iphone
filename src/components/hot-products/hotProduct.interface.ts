@@ -6,6 +6,7 @@ export interface IHotProduct {
   oldPrice: number;
   isHot: boolean;
 }
+
 export const dataHotProducts: IHotProduct[] = [
   {
     name: "Dell XPS 15 (2025)",
