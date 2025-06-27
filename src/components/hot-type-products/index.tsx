@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { products } from "./fakeData";
 import ProductCard from "../hot-products/productCard";
-import { dataOptions , IOption } from "./homeTypeProduct.interfake"
+import { dataOptions, IOption } from "./homeTypeProduct.interfake"
 import { IProduct } from "./homeTypeProduct.interfake";
+import { useNavigate } from "react-router-dom";
 
 const HomeTypeProducts = () => {
+  const navigate = useNavigate();
+
   const [optionSelected, setOptionSelected] = useState<IOption>(dataOptions[0])
   const [data, setData] = useState<IProduct[]>(
     products.filter((x) => x.category === optionSelected.value)
@@ -29,11 +32,15 @@ const HomeTypeProducts = () => {
           ))}
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 my-8">
         {products.filter((x) => x.category === optionSelected.value).map((item: IProduct, index: number) => (
           <ProductCard key={index} item={item} />
         ))}
       </div>
+      <div onClick={() => {
+        navigate("/products");
+      }} className="m-auto mb-6 px-6 py-2 bg-white hover:bg-neutral-200 border border-blue-500
+  cursor-pointer rounded-full text-blue-600 w-fit"> xem thêm sản phầm</div>
     </div>
   );
 };
