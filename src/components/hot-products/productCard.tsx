@@ -46,9 +46,7 @@ const ProductCard = (props: Props) => {
                         </div>
                     ) : (
                         <div className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-4 py-2 rounded-lg
-  text-sm font-semibold whitespace-nowrap">
-                            Thêm giỏ hàng
-                        </div>
+                        text-sm font-semibold whitespace-nowrap  ">Thêm giỏ hàng</div>
                     )}
                 </div>
             </div>
