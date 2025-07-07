@@ -1,23 +1,39 @@
-import React from "react";
-import { HomeOutlined } from "@ant-design/icons";
-import {
-  Breadcrumb,
-  Checkbox,
-  GetProp,
-  Select,
-} from "antd";
+import React, { useState } from "react";
+import { HomeOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { Breadcrumb, Checkbox, GetProp, Select } from "antd";
 import { brands, categories, configuration, gpu, ram, sorting, storage } from "./products.interface";
+import { IProduct } from "../../components/hot-type-products/homeTypeProduct.interfake";
+import { products } from "./faData";
+import ProductCard from "./productCard";
 
 const items = [
-  { title: <HomeOutlined /> },
-  { title: <span>Laptop</span> },
+  {
+    href: "/",
+    title: <HomeOutlined />,
+  },
+  {
+    title: "Sản phẩm",
+  },
 ];
 
 const Products = () => {
+  const [categorySelected, setCategorySelected] = useState("");
+  const [ProductData, setProductData] = useState(products);
+
   const onChangeBrand: GetProp<typeof Checkbox.Group, "onChange"> = (
     checkedValues
   ) => {
     console.log("checked = ", checkedValues);
+  };
+
+  const handleFilterCategory = (val: string) => {
+    setCategorySelected(val);
+    //categorySelected
+    console.log('categorySelected: ', categorySelected);
+    console.log('val: ', val);
+    const newProductsByBrand = products.filter((x) => !val || x.category === val);
+    console.log('newProductsByBrand: ', newProductsByBrand);
+    setProductData(newProductsByBrand);
   };
 
   return (
@@ -40,6 +56,7 @@ const Products = () => {
                 {categories.map((category) => (
                   <li key={category.id}>
                     <button
+                      onClick={() => handleFilterCategory(category.value)}
                       className="flex items-center w-full text-left py-1 px-2 rounded-md cursor-pointer whitespace-nowrap text-gray-700 hover:bg-gray-50"
                     >
                       {category.name}
@@ -127,9 +144,13 @@ const Products = () => {
                 placeholder="Mới nhất"
                 optionFilterProp="label"
                 className="w-[160px]"
-                options={sorting}
-              />
+                options={sorting} />
             </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {ProductData.map((product: IProduct, index: number) => (
+              <ProductCard item={product} key={index} />
+            ))}
           </div>
         </div>
       </div>
@@ -137,5 +158,4 @@ const Products = () => {
   );
 };
 
-// ⚡ THÊM EXPORT DEFAULT
 export default Products;
