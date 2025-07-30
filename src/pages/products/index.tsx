@@ -47,8 +47,8 @@ const Products = () => {
       setProductData(newProductsByBrand);
     }
   };
-  
-const handlePriceSorting = (val: string) => {
+
+  const handlePriceSorting = (val: string) => {
     setPriceSorting(val);
     if (val === "price-asc") {
       const newListProducts = productData.sort((a, b) => a.price - b.price);
@@ -63,7 +63,7 @@ const handlePriceSorting = (val: string) => {
       setProductData(newListProducts);
     }
   };
-  
+
   // const [hihi, setHihi] = useState<string[]>([]);
 
   // const onSetHihi = (value: string) => {
@@ -90,8 +90,8 @@ const handlePriceSorting = (val: string) => {
   //   return checkedValues
   // };
 
-  return (
-    <div className="mt-4">
+ return (
+    <div className="mt-4 max-w-7xl mx-auto">
       <Breadcrumb items={items} />
       <div className="mb-8 mt-4">
         <h1 className="text-3xl font-bold text-gray-800">Laptop</h1>
@@ -119,7 +119,7 @@ const handlePriceSorting = (val: string) => {
                     >
                       {category.name}
                     </button>
-                     </li>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -161,7 +161,7 @@ const handlePriceSorting = (val: string) => {
                   <Select
                     showSearch
                     placeholder="Chọn cấu hình"
-                     optionFilterProp="label"
+                    optionFilterProp="label"
                     // onChange={onChange}
                     // onSearch={onSearch}
                     options={configuration}
@@ -237,7 +237,7 @@ const handlePriceSorting = (val: string) => {
               />
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {productData.map((product: IProduct, index: number) => (
               <ProductCard item={product} key={index} />
             ))}
