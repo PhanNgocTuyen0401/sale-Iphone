@@ -1,21 +1,22 @@
 import React from "react";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { IHotProduct } from "./hotProduct.interface";
+import { useNavigate } from "react-router-dom";
+import { IProduct } from "../hot-type-products/homeTypeProduct.interfake";
 
 interface Props {
-    item: IHotProduct; //REQUIRED PROP => BẮT BUỘC TRUYỀN
+    item: IHotProduct | IProduct; //REQUIRED PROP => BẮT BUỘC TRUYỀN
     isHot?: boolean; //OPTIONAL PROP => có thể thể truyền -> có / 
     // ko -> nếu ko truyền qua prop này luôn bằng undefined
 }
 
 const ProductCard = (props: Props) => {
     const { item, isHot } = props;
+    const navigate = useNavigate();
     return (
-        <div
-            className="rounded-xl bg-white shadow-md hover:shadow-xl transition-transform cursor-pointer"
-        >
+        <div onClick={() => navigate('/product-detail/1')} className="rounded-xl bg-white shadow-md hover:shadow-xl transition-transform cursor-pointer">
             <div className="relative">
-                <img className="rounded-xl" src={item.image} alt="" />
+                  <img className="rounded-t-xl" src={item.image} alt="" />
                 {isHot &&
                     <div className="absolute top-3 left-3 bg-red-500 rounded text-white px-2 py-1 text-xs font-bold">
                         Giảm {item.discount}%
