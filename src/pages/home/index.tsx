@@ -4,6 +4,7 @@ import Brand from "../../components/brand";
 import HotProducts from "../../components/hot-products";
 import HomePromotion from "../../components/home-promotion";
 import HomeTypeProducts from "../../components/hot-type-products";
+import Payment from "../payment";
 
 const Home = () => {
     return (
@@ -13,6 +14,7 @@ const Home = () => {
             <HotProducts />
             <HomePromotion />
             <HomeTypeProducts />
+            <Payment />
         </div>
     )
 }

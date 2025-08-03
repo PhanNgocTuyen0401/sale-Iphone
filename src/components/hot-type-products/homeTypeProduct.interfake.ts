@@ -44,4 +44,5 @@ export interface IProduct {
   specs: ISpec;
   brand: string;
   category: string;
+  ram?: string;
 }
