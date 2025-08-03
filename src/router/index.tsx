@@ -3,7 +3,8 @@ import Home from "../pages/home";
 import Contact from "../pages/contact";
 import Layout from "../layout";
 import Products from "../pages/products";
-import ProductDetail from "../pages/products-detail/intdex";
+import ProductDetail from "../pages/products-detail/index";
+import Payment from "../pages/payment";
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
       {
         path: "/product-detail/:productId",
         element: <ProductDetail />
+      },
+      {
+        path: "/payment/:productId",
+        element: <Payment />
       },
     ]
   }

@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import { relatedProducts } from "./fakeData";
 import ProductCard from "../../components/hot-products/productCard";
 import { HomeOutlined } from "@ant-design/icons";
 import { Breadcrumb } from "antd";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { products } from "../products/faData";
+import { useStore } from "../../store";
+
 const productImages = [
   "https://readdy.ai/api/search-image?query=modern%20gaming%20laptop%20with%20RGB%20keyboard%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20studio%20lighting%2C%20high-end%20technology%20device%20showcase&width=600&height=400&seq=1&orientation=landscape",
   "https://readdy.ai/api/search-image?query=laptop%20side%20view%20showing%20ports%20and%20connections%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20studio%20lighting%2C%20detailed%20hardware%20showcase&width=600&height=400&seq=2&orientation=landscape",
@@ -26,13 +29,21 @@ const items = [
 ];
 
 const ProductDetail = () => {
-  const{productId} = useParams();
-  console.log ('productId', productId);
+  const { productId } = useParams();
+  // console.log ('productId', productId);
+  const [indexImg, setIndexImg] = useState<number>(0);
+
+  const navigate = useNavigate();
+
+  const  { incQuantityCart } = useStore();
 
   useEffect(() => {
-    console.log( ' chay dau tien ');
-    window.scroll({ top: 0, behavior: "smooth"})
+    // console.log( ' chay dau tien ');
+    window.scroll({ top: 0, behavior: "smooth" })
   }, [productId])
+
+  // const productInfo = products.find((item) => item.id === parseInt(productId as string)); //parseInt : chuyển number thành string
+  const productInfo = products.find((item) => item.id == productId as any);
 
   return (
     <div className="max-w-7xl mx-auto min-h-screen bg-white">
@@ -46,7 +57,7 @@ const ProductDetail = () => {
           <div className="space-y-4">
             <div className="aspect-w-4 aspect-h-3 bg-gray-100 rounded-lg overflow-hidden">
               <img
-                src={productImages[0]}
+                src={productImages[indexImg]}
                 alt="Product"
                 className="w-full h-96 object-cover object-top"
               />
@@ -55,7 +66,10 @@ const ProductDetail = () => {
               {productImages.map((image, index) => (
                 <button
                   key={index}
-                  className={`aspect-w-1 aspect-h-1 bg-gray-100 rounded-lg overflow-hidden cursor-pointer border border-gray-200`}
+                  onClick={() => setIndexImg(index)}
+                  className={`aspect-w-1 aspect-h-1 bg-gray-100 rounded-lg overflow-hidden cursor-pointer border ${
+                    indexImg === index ? "border-blue-500" : "border-gray-200"
+                    }`}
                 >
                   <img
                     src={image}
@@ -70,7 +84,8 @@ const ProductDetail = () => {
           {/* Product Info */}
           <div className="space-y-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              ASUS TUF Gaming F15 FX506LH-HN188W
+              {/* ASUS TUF Gaming F15 FX506LH-HN188W */}
+              {productInfo ?.name}
             </h1>
 
             <div className="space-y-2">
@@ -90,11 +105,11 @@ const ProductDetail = () => {
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              <button className="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700 transition-colors cursor-pointer !rounded-button whitespace-nowrap">
+              <button onClick={incQuantityCart} className="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700 transition-colors cursor-pointer !rounded-button whitespace-nowrap">
                 <i className="fas fa-shopping-cart mr-2"></i>
                 Thêm vào giỏ hàng
               </button>
-              <button className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors cursor-pointer !rounded-button whitespace-nowrap">
+              <button onClick={() => navigate(`/payment/${productId}`)} className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors cursor-pointer !rounded-button whitespace-nowrap">
                 Mua ngay
               </button>
             </div>
