@@ -66,8 +66,7 @@ const Cart = () => {
             <div className="text-center mt-8">
                 <button
                     onClick={() => navigate("/products")}
-                    className="px-6 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition"
-                >
+                    className="px-6 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition" >
                     Tiếp tục mua sắm
                 </button>
             </div>
