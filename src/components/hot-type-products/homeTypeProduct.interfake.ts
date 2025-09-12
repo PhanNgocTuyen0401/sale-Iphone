@@ -36,7 +36,8 @@ interface ISpec {
 export interface IProduct {
   id: number;
   name: string;
-  image: string;
+  image?: string;
+  thumbnail?: string
   discount: number;
   price: number;
   oldPrice: number;
@@ -44,5 +45,5 @@ export interface IProduct {
   specs: ISpec;
   brand: string;
   category: string;
-  ram?: string;
+  createdAt?: string;
 }

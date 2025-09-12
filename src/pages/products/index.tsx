@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HomeOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Breadcrumb, Checkbox, GetProp, Select } from "antd";
 import { brands, categories, configuration, gpu, ram, sorting, storage } from "./products.interface";
 import { IProduct } from "../../components/hot-type-products/homeTypeProduct.interfake";
 import { products, newestProducts } from "./faData";
 import ProductCard from "./productCard";
+import { FadeLoader } from "react-spinners";
 
 const items = [
   {
@@ -19,33 +20,49 @@ const items = [
 const Products = () => {
   const [categorySelected, setCategorySelected] = useState("");
   const [priceSorting, setPriceSorting] = useState("newest");
-  const [productData, setProductData] = useState(products);
+  const [productData, setProductData] = useState<IProduct[]>([]);
+
+  const [ramSelected, setRamSelected] = useState("");
+  const [storageSelected, setStorageSelected] = useState("");
+  const [brandSelected, setBrandSelected] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const onChangeBrand: GetProp<typeof Checkbox.Group, "onChange"> = (
     checkedValues
   ) => {
     console.log("checked = ", checkedValues);
-    const newListProducts = filterProductsByBrands(
-      products,
-      checkedValues as string[]
-    );
-    // console.log("newListProducts: ", newListProducts);
-    setProductData(newListProducts);
+    const brandJoined = checkedValues.join(",");
+    console.log("brandJoined: ", brandJoined);
+    setBrandSelected(brandJoined)
+    // const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&brand=${brandJoined}`;
+    const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&category=${categorySelected}&brand=${brandJoined}&specs[ram]=${ramSelected}&specs[storage]=${storageSelected}`;
+    handFileProducts(url);
+
+    // const newListProducts = filterProductsByBrands(
+    //   products,
+    //   checkedValues as string[]
+    // );
+    // // console.log("newListProducts: ", newListProducts);
+    // setProductData(newListProducts);
   };
 
   const filterProductsByBrands = (products: IProduct[], brands: string[]) => {
     return products.filter((product) => brands.includes(product.brand));
   };
 
-  const handleFilterCategory = (val: string) => {
+  const handleFilterCategory = async (val: string) => {
     setCategorySelected(val);
-    // categorySelected
-    if(!val) { // !val bang voi val === ""
-      setProductData(newestProducts);
-    } else {
-      const newProductsByBrand = products.filter((x) => x.category === val);
-      setProductData(newProductsByBrand);
-    }
+    // // categorySelected
+    // if(!val) { // !val bang voi val === ""
+    //   setProductData(newestProducts);
+    // } else {
+    //   const newProductsByBrand = products.filter((x) => x.category === val);
+    //   setProductData(newProductsByBrand);
+    // }
+    const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&category=${val}&brand=${brandSelected}&specs[ram]=${ramSelected}&specs[storage]=${storageSelected}`;
+    handFileProducts(url);
   };
 
   const handlePriceSorting = (val: string) => {
@@ -57,13 +74,18 @@ const Products = () => {
       const newListProducts = productData.sort((a, b) => b.price - a.price);
       setProductData(newListProducts);
     } else if (val === "newest") {
-      const newListProducts = newestProducts.filter(
-        (x) => x.category === categorySelected
-      );
-      setProductData(newListProducts);
+      const newListProducts = productData.sort((a: any, b: any) => converDateStringToTimestamp(b.createAt) - converDateStringToTimestamp(a.createAt));
+      setProductData(newListProducts as any);
     }
+    const abc = converDateStringToTimestamp(`2025-08-10T14:08:59.o34`);
+    console.log("abc", abc);
   };
 
+  const converDateStringToTimestamp = (date: string) => {
+    const converted = Date.parse(date);
+    console.log("converted", converted);
+    return converted;
+  }
   // const [hihi, setHihi] = useState<string[]>([]);
 
   // const onSetHihi = (value: string) => {
@@ -90,7 +112,48 @@ const Products = () => {
   //   return checkedValues
   // };
 
- return (
+  const getProducts = async () => {
+    const url = "https://lapshop-be.onrender.com/api/product?page=1&limit=100";
+    handFileProducts(url);
+  }
+
+  const handFileProducts = async (url: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const result = await response.json();
+      console.log(result);
+      setProductData(result.data);
+      setIsLoading(false);
+    } catch (error: any) {
+      console.error(error.message);
+      setIsLoading(false);
+    }
+  }
+
+  const handleChangeRam = async (val: string) => {
+    setRamSelected(val);
+    // const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&specs[ram]=${val}`;
+    const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&category=${categorySelected}&brand=${brandSelected}&specs[ram]=${val}&specs[storage]=${storageSelected}`;
+    handFileProducts(url);
+  }
+ 
+  const handleChangeStorage = async (val: string) => {
+    setStorageSelected(val);
+    // const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&specs[storage]=${val}`;
+    const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&category=${categorySelected}&brand=${brandSelected}&specs[ram]=${ramSelected}&specs[storage]=${val}`;
+    handFileProducts(url);
+  }
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+
+
+  return (
     <div className="mt-4 max-w-7xl mx-auto">
       <Breadcrumb items={items} />
       <div className="mb-8 mt-4">
@@ -111,11 +174,10 @@ const Products = () => {
                   <li key={category.id}>
                     <button
                       onClick={() => handleFilterCategory(category.value)}
-                      className={`flex items-center w-full text-left py-1 px-2 rounded-md cursor-pointer whitespace-nowrap hover:bg-gray-50 ${
-                        categorySelected === category.value
-                          ? "text-blue-600"
-                          : "text-gray-700"
-                      }`}
+                      className={`flex items-center w-full text-left py-1 px-2 rounded-md cursor-pointer whitespace-nowrap hover:bg-gray-50 ${categorySelected === category.value
+                        ? "text-blue-600"
+                        : "text-gray-700"
+                        }`}
                     >
                       {category.name}
                     </button>
@@ -165,7 +227,7 @@ const Products = () => {
                     // onChange={onChange}
                     // onSearch={onSearch}
                     options={configuration}
-                    value={configuration[0].value}
+                    value={ramSelected}
                     className="w-full"
                   />
                 </div>
@@ -175,10 +237,10 @@ const Products = () => {
                     showSearch
                     placeholder="Chọn cấu hình"
                     optionFilterProp="label"
-                    // onChange={onChange}
+                    onChange={handleChangeRam}
                     // onSearch={onSearch}
                     options={ram}
-                    value={ram[0].value}
+                    value={ram[0].value} //
                     className="w-full"
                   />
                 </div>
@@ -203,10 +265,10 @@ const Products = () => {
                     showSearch
                     placeholder="Chọn cấu hình"
                     optionFilterProp="label"
-                    // onChange={onChange}
+                    onChange={handleChangeStorage}
                     // onSearch={onSearch}
                     options={storage}
-                    value={storage[0].value}
+                    value={storageSelected}
                     className="w-full"
                   />
                 </div>
@@ -215,7 +277,7 @@ const Products = () => {
 
             <button
               className="w-full py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors cursor-pointer !rounded-button whitespace-nowrap"
-              // onClick={resetFilters}
+            // onClick={resetFilters}
             >
               Xóa bộ lọc
             </button>
@@ -237,11 +299,24 @@ const Products = () => {
               />
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-            {productData.map((product: IProduct, index: number) => (
-              <ProductCard item={product} key={index} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center w-full h-64">
+              <FadeLoader
+                color={"#1859db"}
+                loading={isLoading}
+                // size={80}
+                aria-label="Loading Spinner"
+                data-testid="loader"
+              />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+              {productData.map((product: IProduct, index: number) => (
+                <ProductCard item={product} key={index} />
+              ))}
+            </div>
+          )}
+
         </div>
       </div>
     </div>

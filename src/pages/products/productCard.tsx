@@ -5,13 +5,13 @@ import { useNavigate } from "react-router-dom";
 
 const ProductCard = (props: Props) => {
   const { item } = props;
-      const navigate = useNavigate();
-  
+  const navigate = useNavigate();
+
   return (
     <div onClick={() => navigate(`/product-detail/${item.id}`)} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow">
       <div className="relative">
         <img
-          src={item.image}
+          src={item.thumbnail}
           alt={item.name}
           className="w-full h-56 object-cover object-top"
         />

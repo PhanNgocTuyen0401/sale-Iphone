@@ -166,7 +166,6 @@ const Profile = () => {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="dating">Đang hẹn hò</option>
-                            <option value="single">Ế</option>
                             <option value="engaged">Đã đính hôn</option>
                         </select>
                     </div>

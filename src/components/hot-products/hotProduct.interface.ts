@@ -1,7 +1,8 @@
 export interface IHotProduct {
   id?: number;
   name: string;
-  image: string;
+  image?: string;
+  thumbnail?: string;
   discount: number;
   price: number;
   oldPrice: number;
