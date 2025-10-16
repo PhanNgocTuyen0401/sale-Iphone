@@ -1,19 +1,23 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { relatedProducts } from "./fakeData";
 import ProductCard from "../../components/hot-products/productCard";
 import { HomeOutlined } from "@ant-design/icons";
 import { Breadcrumb } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
 import { products } from "../products/faData";
-import { useStore } from "../../store";
+import { useUserCart } from "../../store";
+import { IProduct } from "../../components/hot-type-products/homeTypeProduct.interfake";
 
-const productImages = [
-  "https://readdy.ai/api/search-image?query=modern%20gaming%20laptop%20with%20RGB%20keyboard%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20studio%20lighting%2C%20high-end%20technology%20device%20showcase&width=600&height=400&seq=1&orientation=landscape",
-  "https://readdy.ai/api/search-image?query=laptop%20side%20view%20showing%20ports%20and%20connections%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20studio%20lighting%2C%20detailed%20hardware%20showcase&width=600&height=400&seq=2&orientation=landscape",
-  "https://readdy.ai/api/search-image?query=laptop%20screen%20display%20showing%20vibrant%20colors%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20studio%20lighting%2C%20display%20quality%20demonstration&width=600&height=400&seq=3&orientation=landscape",
-  "https://readdy.ai/api/search-image?query=laptop%20keyboard%20close-up%20with%20backlit%20keys%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20studio%20lighting%2C%20premium%20keyboard%20detail&width=600&height=400&seq=4&orientation=landscape",
-];
+// const productImages = [
+//   "https://readdy.ai/api/search-image?query=modern%20gaming%20laptop%20with%20RGB%20keyboard%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20studio%20lighting%2C%20high-end%20technology%20device%20showcase&width=600&height=400&seq=1&orientation=landscape",
+//   "https://readdy.ai/api/search-image?query=laptop%20side%20view%20showing%20ports%20and%20connections%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20studio%20lighting%2C%20detailed%20hardware%20showcase&width=600&height=400&seq=2&orientation=landscape",
+//   "https://readdy.ai/api/search-image?query=laptop%20screen%20display%20showing%20vibrant%20colors%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20studio%20lighting%2C%20display%20quality%20demonstration&width=600&height=400&seq=3&orientation=landscape",
+//   "https://readdy.ai/api/search-image?query=laptop%20keyboard%20close-up%20with%20backlit%20keys%20on%20clean%20white%20background%2C%20professional%20product%20photography%2C%20minimalist%20studio%20lighting%2C%20premium%20keyboard%20detail&width=600&height=400&seq=4&orientation=landscape",
+// ];
+
+import { useUserInfo } from "../../store/useUserInfo";
+import axios from "axios";
+import { showMessage } from "../../utils/showMessage";
 
 const items = [
   {
@@ -30,20 +34,73 @@ const items = [
 
 const ProductDetail = () => {
   const { productId } = useParams();
-  // console.log ('productId', productId);
-  const [indexImg, setIndexImg] = useState<number>(0);
 
+  const { setQuantityCart, setProductCart } = useUserCart();
+  const { userInfo } = useUserInfo();
   const navigate = useNavigate();
 
-  const  { incQuantityCart } = useStore();
+  const [indexImg, setIndexImg] = useState<number>(0);
+  const [productDetail, setProductDetail] = useState<IProduct>();
+  const [listImages, setListImages] = useState<string[]>([]);
 
   useEffect(() => {
-    // console.log( ' chay dau tien ');
-    window.scroll({ top: 0, behavior: "smooth" })
-  }, [productId])
+    // console.log('se chay khi co su thay doi cua productId');
+    window.scroll({ top: 0, behavior: "smooth" });
+  }, [productId]); // [] dependencies
 
   // const productInfo = products.find((item) => item.id === parseInt(productId as string)); //parseInt : chuyển number thành string
-  const productInfo = products.find((item) => item.id == productId as any);
+  const productInfo = products.find((item) => item.id == (productId as any));
+
+  const getProductDetail = async () => {
+    const url = `https://lapshop-be.onrender.com/api/product/${productId}`;
+    try {
+      const response = await fetch(url, { method: "GET" });
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const result = await response.json();
+      setProductDetail(result.product);
+      setListImages(result.product.images);
+    } catch (error: any) {
+      console.error(error.message);
+      // setIsLoading(false);
+    }
+  };
+  const handleAddProductToCart = () => {
+    const payload = {
+      userId: userInfo?.id,
+      productId: productId,
+      quantity: 1,
+    };
+    if (userInfo) {
+      const url = "https://lapshop-be.onrender.com/api/cart";
+      axios
+        .post(url, payload)
+        .then(function (response) {
+          showMessage("success", "Thêm sản phẩm vào giỏ hàng thành công!");
+          const totalProducts = response.data?.cart?.items?.length;
+          const listItems = response.data?.cart?.items;
+          setQuantityCart(totalProducts);
+          setProductCart(listItems);
+        })
+        .catch(function (error) {
+          showMessage(
+            "error",
+            "Thêm sản phẩm vào giỏ hàng thất bại. Vui lòng thử lại!"
+          );
+        });
+    } else {
+      showMessage(
+        "warning",
+        "Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!"
+      );
+    }
+  };
+
+  useEffect(() => {
+    getProductDetail();
+  }, []);
+
 
   return (
     <div className="max-w-7xl mx-auto min-h-screen bg-white">
@@ -57,18 +114,17 @@ const ProductDetail = () => {
           <div className="space-y-4">
             <div className="aspect-w-4 aspect-h-3 bg-gray-100 rounded-lg overflow-hidden">
               <img
-                src={productImages[indexImg]}
+                src={listImages[indexImg]}
                 alt="Product"
                 className="w-full h-96 object-cover object-top"
               />
             </div>
             <div className="grid grid-cols-4 gap-2">
-              {productImages.map((image, index) => (
+              {listImages.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setIndexImg(index)}
-                  className={`aspect-w-1 aspect-h-1 bg-gray-100 rounded-lg overflow-hidden cursor-pointer border ${
-                    indexImg === index ? "border-blue-500" : "border-gray-200"
+                  className={`aspect-w-1 aspect-h-1 bg-gray-100 rounded-lg overflow-hidden cursor-pointer border ${indexImg === index ? "border-blue-500" : "border-gray-200"
                     }`}
                 >
                   <img
@@ -85,16 +141,16 @@ const ProductDetail = () => {
           <div className="space-y-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               {/* ASUS TUF Gaming F15 FX506LH-HN188W */}
-              {productInfo ?.name}
+              {productDetail?.name}
             </h1>
 
             <div className="space-y-2">
               <div className="flex items-center space-x-4">
                 <span className="text-3xl font-bold text-blue-600">
-                  22.990.000₫
+                  {productDetail?.price}₫
                 </span>
                 <span className="text-xl text-gray-500 line-through">
-                  25.990.000₫
+                  {productDetail?.oldPrice}₫
                 </span>
                 <span className="bg-red-100 text-red-800 text-sm font-medium px-2.5 py-0.5 rounded">
                   -12%
@@ -105,11 +161,29 @@ const ProductDetail = () => {
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              <button onClick={incQuantityCart} className="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700 transition-colors cursor-pointer !rounded-button whitespace-nowrap">
+              {/* <button onClick={() => {
+                userInfo && handleAddProductToCart()
+              }} className={`w-full ${userInfo ? "bg-red-600 hover:bg-red-700 cursor-pointer" : "bg-gray-600 cursor-not-allowed"} text-white py-3 px-6 rounded-lg font-medium transition-colors !rounded-button whitespace-nowrap`}>
+                <i className="fas fa-shopping-cart mr-2"></i>
+                Thêm vào giỏ hàng
+              </button> */}
+              <button
+                onClick={handleAddProductToCart}
+                className="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700 transition-colors cursor-pointer !rounded-button whitespace-nowrap"
+              >
                 <i className="fas fa-shopping-cart mr-2"></i>
                 Thêm vào giỏ hàng
               </button>
-              <button onClick={() => navigate(`/payment/${productId}`)} className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors cursor-pointer !rounded-button whitespace-nowrap">
+              <button
+                onClick={() =>
+                  navigate(`/payment/${productId}`, {
+                    state: {
+                      quantity: 1,
+                    },
+                  })
+                }
+                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors cursor-pointer !rounded-button whitespace-nowrap"
+              >
                 Mua ngay
               </button>
             </div>

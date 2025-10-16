@@ -6,6 +6,7 @@ import { IProduct } from "../../components/hot-type-products/homeTypeProduct.int
 import { products, newestProducts } from "./faData";
 import ProductCard from "./productCard";
 import { FadeLoader } from "react-spinners";
+import { Pagination } from "antd";
 
 const items = [
   {
@@ -27,7 +28,12 @@ const Products = () => {
   const [brandSelected, setBrandSelected] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    total: 0,
+  });
 
+  const [page, setPage] = useState(1);
 
   const onChangeBrand: GetProp<typeof Checkbox.Group, "onChange"> = (
     checkedValues
@@ -35,9 +41,9 @@ const Products = () => {
     console.log("checked = ", checkedValues);
     const brandJoined = checkedValues.join(",");
     console.log("brandJoined: ", brandJoined);
-    setBrandSelected(brandJoined)
-    // const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&brand=${brandJoined}`;
-    const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&category=${categorySelected}&brand=${brandJoined}&specs[ram]=${ramSelected}&specs[storage]=${storageSelected}`;
+    setBrandSelected(brandJoined);
+    // const url = `https://lapshop-be.onrender.com/api/product?page=${pagination.page}&limit=10&brand=${brandJoined}`;
+    const url = `https://lapshop-be.onrender.com/api/product?page=${pagination.page}&limit=10&category=${categorySelected}&brand=${brandJoined}&specs[ram]=${ramSelected}&specs[storage]=${storageSelected}`;
     handFileProducts(url);
 
     // const newListProducts = filterProductsByBrands(
@@ -54,14 +60,7 @@ const Products = () => {
 
   const handleFilterCategory = async (val: string) => {
     setCategorySelected(val);
-    // // categorySelected
-    // if(!val) { // !val bang voi val === ""
-    //   setProductData(newestProducts);
-    // } else {
-    //   const newProductsByBrand = products.filter((x) => x.category === val);
-    //   setProductData(newProductsByBrand);
-    // }
-    const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&category=${val}&brand=${brandSelected}&specs[ram]=${ramSelected}&specs[storage]=${storageSelected}`;
+    const url = `https://lapshop-be.onrender.com/api/product?page=${pagination.page}&limit=10&category=${val}&brand=${brandSelected}&specs[ram]=${ramSelected}&specs[storage]=${storageSelected}`;
     handFileProducts(url);
   };
 
@@ -74,7 +73,11 @@ const Products = () => {
       const newListProducts = productData.sort((a, b) => b.price - a.price);
       setProductData(newListProducts);
     } else if (val === "newest") {
-      const newListProducts = productData.sort((a: any, b: any) => converDateStringToTimestamp(b.createAt) - converDateStringToTimestamp(a.createAt));
+      const newListProducts = productData.sort(
+        (a: any, b: any) =>
+          converDateStringToTimestamp(b.createAt) -
+          converDateStringToTimestamp(a.createAt)
+      );
       setProductData(newListProducts as any);
     }
     const abc = converDateStringToTimestamp(`2025-08-10T14:08:59.o34`);
@@ -85,7 +88,7 @@ const Products = () => {
     const converted = Date.parse(date);
     console.log("converted", converted);
     return converted;
-  }
+  };
   // const [hihi, setHihi] = useState<string[]>([]);
 
   // const onSetHihi = (value: string) => {
@@ -113,45 +116,56 @@ const Products = () => {
   // };
 
   const getProducts = async () => {
-    const url = "https://lapshop-be.onrender.com/api/product?page=1&limit=100";
+    const url = `https://lapshop-be.onrender.com/api/product?page=${page}&limit=10`;
     handFileProducts(url);
-  }
+  };
 
   const handFileProducts = async (url: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, { method: "GET" });
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
       const result = await response.json();
-      console.log(result);
+      console.log("Ket qua:", result);
+      console.log("Pagination:", result.Pagination);
+      setPagination({
+        page: result.pagination.page,
+        total: result.pagination.total,
+      });
       setProductData(result.data);
       setIsLoading(false);
     } catch (error: any) {
       console.error(error.message);
       setIsLoading(false);
     }
-  }
+  };
 
   const handleChangeRam = async (val: string) => {
     setRamSelected(val);
-    // const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&specs[ram]=${val}`;
-    const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&category=${categorySelected}&brand=${brandSelected}&specs[ram]=${val}&specs[storage]=${storageSelected}`;
+    // const url = `https://lapshop-be.onrender.com/api/product?page=${pagination.page}&limit=10&specs[ram]=${val}`;
+    const url = `https://lapshop-be.onrender.com/api/product?page=${pagination.page}&limit=10&category=${categorySelected}&brand=${brandSelected}&specs[ram]=${val}&specs[storage]=${storageSelected}`;
     handFileProducts(url);
-  }
- 
+  };
+
   const handleChangeStorage = async (val: string) => {
     setStorageSelected(val);
-    // const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&specs[storage]=${val}`;
-    const url = `https://lapshop-be.onrender.com/api/product?page=1&limit=100&category=${categorySelected}&brand=${brandSelected}&specs[ram]=${ramSelected}&specs[storage]=${val}`;
+    // const url = `https://lapshop-be.onrender.com/api/product?page=${pagination.page}&limit=10&specs[storage]=${val}`;
+    const url = `https://lapshop-be.onrender.com/api/product?page=${pagination.page}&limit=10&category=${categorySelected}&brand=${brandSelected}&specs[ram]=${ramSelected}&specs[storage]=${val}`;
     handFileProducts(url);
-  }
+  };
+
+  const handlePagination = (pageSelected: number) => {
+    const url = `https://lapshop-be.onrender.com/api/product?page=${pagination.page}&limit=10&category=${categorySelected}&brand=${brandSelected}&specs[ram]=${ramSelected}&specs[storage]=${storageSelected}`;
+    console.log("url:", url);
+    handFileProducts(url);
+    console.log("pageSelected:", pageSelected);
+  };
 
   useEffect(() => {
     getProducts();
   }, []);
-
 
   return (
     <div className="mt-4 max-w-7xl mx-auto">
@@ -175,8 +189,8 @@ const Products = () => {
                     <button
                       onClick={() => handleFilterCategory(category.value)}
                       className={`flex items-center w-full text-left py-1 px-2 rounded-md cursor-pointer whitespace-nowrap hover:bg-gray-50 ${categorySelected === category.value
-                        ? "text-blue-600"
-                        : "text-gray-700"
+                          ? "text-blue-600"
+                          : "text-gray-700"
                         }`}
                     >
                       {category.name}
@@ -316,7 +330,13 @@ const Products = () => {
               ))}
             </div>
           )}
-
+          <div className="py-8">
+            <Pagination
+              align="center"
+              defaultCurrent={pagination.page}
+              total={pagination.total}
+              onChange={(pageNumber) => console.log("pageNumber:", pageNumber)} />
+          </div>
         </div>
       </div>
     </div>
