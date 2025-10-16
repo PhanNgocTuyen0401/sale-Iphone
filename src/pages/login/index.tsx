@@ -1,125 +1,217 @@
+import { Input } from "antd";
+import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useUserInfo } from "../../store/useUserInfo";
+
+// import { useNavigate } from "react-router-dom";
+// import axios from "axios";
+// import { Input } from "antd";
+// const Login = () => {
+//   const navigate = useNavigate();
+
+//   const [form, setForm] = useState({
+//     username: "",
+//     password: "",
+//     remember: false,
+
+//   });
+
+//   const handleChange = (e: any) => {
+//     const { name, value, type, checked } = e.target;
+//     setForm((prev) => ({
+//       ...prev,
+//       [name]: type === "checkbox" ? checked : value,
+//     }));
+//   };
+
+// const handleSubmit = (e: any) => {
+//   e.preventDefault();
+//   const loginUrl = `https://lapshop-be.onrender.com/api/auth/login`;
+
+//   axios.post(loginUrl, {
+//     username: 'Fred',
+//     password: 'Flintstone'
+//   })
+//     .then(function (response) {
+//       console.log('Thanh cong: ', response.data);
+//       localStorage.setItem("token", response.data.token);
+//       localStorage.setItem("user", JSON.stringify(response.data.user));
+
+//       // navigate('/');
+//     })
+//     .catch(function (error) {
+//       console.log('That bai');
+//     });
+// };
 
 const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { setUserInfo} = useUserInfo();
 
-  const [form, setForm] = useState({
-    username: "",
-    password: "",
-    remember: false,
-  });
 
-  const handleChange = (e: any) => {
-    const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  const handleSubmit = () => {
+
+    const loginUrl = `https://lapshop-be.onrender.com/api/auth/login`;
+
+    axios
+      .post(loginUrl, { username,
+        password,
+      })
+       .then(function (response) {
+        console.log("THANH CONG: ", response.data);
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        setUserInfo(response.data.user);
+        navigate("/");
+        toast.success("Đăng nhập thành công!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      })
+      .catch(function (error) {
+        console.log("THAT BAI");
+      });
   };
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    console.log("Login data:", form);
-  };
+  // return (
+  //   <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-green-100 to-green-300">
+  //     <div className="bg-white bg-opacity-30 p-8 rounded-2xl shadow-lg w-[400px]">
+  //       <h2 className="text-center text-2xl font-bold text-green-400 mb-6">
+  //         Lapshop
+  //       </h2>
+  //       <form>
+  //         <label className="text-gray-600 text-sm">Tên đăng nhập</label>
+  //         <div className="mb-6 mt-1">
+  //           <Input
+  //             placeholder="Tên đăng nhập hoặc Email"
+  //             value={userName}
+  //             onChange={(e) => setUserName(e.target.value)}
+  //             className="w-full p-3 rounded-lg bg-white bg-opacity-20 border border-green-400 border-opacity-40 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-70 transition duration-300 font-light"
+  //           />
+  //         </div>
+
+  //         <label className="text-gray-600 text-sm">Mật khẩu</label>
+  //         <div className="mb-8 mt-1">
+  //           <Input.Password
+  //             type="password"
+  //             placeholder="Mật khẩu"
+  //             value={password}
+  //             onChange={(e) => setPassword(e.target.value)}
+  //             className="w-full p-3 rounded-lg bg-white bg-opacity-20 border border-green-400 border-opacity-40 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-70 transition duration-300 font-light"
+  //           />
+  //         </div>
+  //       </form>
+  //       <button
+  //         type="submit"
+  //         onClick={handleSubmit}
+  //         className="w-full p-3 bg-gray-100 text-green-400 rounded-lg font-bold hover:bg-gray-200 hover:shadow-lg transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none"
+  //       >
+  //         Đăng nhập
+  //       </button>
+
+  //       {/* <div className="w-full h-2 border-b border-green-400 mt-6" /> */}
+
+  //       <div className="flex justify-between mt-6 text-sm text-green-400 font-bold">
+  //         <a
+  //           href="/register"
+  //           className="opacity-80 hover:opacity-100 hover:underline transition duration-300"
+  //         >
+  //           Tạo tài khoản mới (Đăng ký)
+  //         </a>
+  //         <a
+  //           href="/forgot-password"
+  //           className="opacity-80 hover:opacity-100 hover:underline transition duration-300"
+  //         >
+  //           Quên mật khẩu?
+
+
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-300 to-yellow-600">
-      <div className="bg-white bg-opacity-10 backdrop-blur-md p-8 rounded-lg shadow-lg w-full max-w-md">
-        <img
-          src="image copy.png"
-          alt="logo"
-          className="w-24 h-24 mx-auto object-contain mb-4"
-        />
-        <h2 className="text-2xl font-bold text-center text-white mb-6">
-          Account Login
+    // Nền gradient toàn màn hình (trending)
+    <div
+      className="min-h-screen flex items-center justify-center p-4 
+                    bg-gradient-to-br from-indigo-200 via-green-200 to-green-400"
+    >
+      {/* Khối Glassmorphism (Kính mờ) */}
+      <div
+        className="w-full max-w-md p-8 
+                      bg-white border border-gray border-opacity-30 
+                      rounded-2xl shadow-2xl transition duration-500 hover:shadow-3xl"
+      >
+        <h2 className="text-4xl text-green-600 text-center mb-8 tracking-wider font-bold">
+          Lapshop
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="username"
-            placeholder="Username or Email address"
-            value={form.username}
-            onChange={handleChange}
-            className="w-full px-4 py-2 rounded bg-white bg-opacity-20 placeholder-white text-white focus:outline-none focus:ring-2 focus:ring-orange-300"
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            className="w-full px-4 py-2 rounded bg-white bg-opacity-20 placeholder-white text-white focus:outline-none focus:ring-2 focus:ring-orange-300"
-          />
-
-          <div className="flex items-center justify-between text-white text-sm">
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                name="remember"
-                checked={form.remember}
-                onChange={handleChange}
-                className="form-checkbox text-orange-300"
-              />
-              <span>Remember Me</span>
-            </label>
-            <button
-              type="button"
-              className="hover:underline"
-              onClick={() => console.log("Forgot password clicked")}
-            >
-              Forgot password?
-            </button>
+        <form>
+          {/* Input: Username */}
+          <label className="text-gray-400 text-sm">Tên đăng nhập</label>
+          <div className="mb-6 mt-1">
+            <Input
+              placeholder="Tên đăng nhập hoặc Email"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full p-3 rounded-lg bg-white bg-opacity-20 
+                         border border-blue-600 border-opacity-20 focus:outline-none focus:ring-2 
+                         focus:ring-white focus:ring-opacity-50 transition duration-300
+                         font-light"
+            />
           </div>
 
-          <button
-            type="submit"
-            className="w-full py-2 bg-orange-800 text-white rounded hover:bg-orange-900"
-          >
-            Login
-          </button>
+          {/* Input: Password */}
+          <label className="text-gray-400 text-sm">Mật khẩu</label>
+          <div className="mb-8 mt-1">
+            <Input.Password
+              placeholder="Mật khẩu"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-3 rounded-lg bg-white bg-opacity-20 
+                         border border-blue-600 border-opacity-20 focus:outline-none focus:ring-2 
+                         focus:ring-white focus:ring-opacity-50 transition duration-300
+                         font-light"
+            />
+          </div>
         </form>
 
-        {/* Social Login */}
-        <div className="mt-6 text-center text-white">
-          <p className="mb-2">Or login with</p>
-          <div className="flex justify-center space-x-4">
-            <button
-              type="button"
-              className="bg-white p-2 rounded-full"
-              onClick={() => console.log("Login with Facebook")}
-            >
-              <img src="fb..png" alt="Facebook" className="w-6 h-6" />
-            </button>
-            <button
-              type="button"
-              className="bg-white p-2 rounded-full"
-              onClick={() => console.log("Login with Twitter")}
-            >
-              <img src="Twitter.png" alt="Twitter" className="w-6 h-6" />
-            </button>
-            <button
-              type="button"
-              className="bg-white p-2 rounded-full"
-              onClick={() => console.log("Login with Google")}
-            >
-              <img src="gg.png" alt="Google" className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
+        {/* Button: Đăng nhập */}
+        <button
+          type="submit"
+          onClick={handleSubmit}
+          className="w-full p-3 bg-gray-100 text-green-600 rounded-lg font-bold 
+                       hover:bg-gray-200 hover:shadow-lg transition duration-300 transform 
+                       hover:scale-[1.02] active:scale-[0.98] focus:outline-none"
+        >
+          Đăng nhập
+        </button>
+        <div className="w-full h-2 border-b border-green-400 mt-6" />
 
-        {/* Sign Up Link */}
-        <p className="mt-6 text-center text-white text-sm">
-          Don’t have an account?{" "}
-          <button
-            type="button"
-            onClick={() => navigate(`/register`)}
-            className="font-semibold hover:underline"
+        {/* Liên kết Đăng ký và Quên mật khẩu */}
+        <div className="flex justify-between mt-6 text-sm text-green-500 font-bold">
+          {/* Link Đăng ký */}
+          <a
+            href="/register"
+            className="opacity-80 hover:opacity-100 hover:underline transition duration-300"
           >
-            Sign Up
-          </button>
-        </p>
+            Tạo tài khoản mới (Đăng ký)
+          </a>
+
+          {/* Link Quên mật khẩu */}
+          <a
+            href="/forgot-password"
+            className="opacity-80 hover:opacity-100 hover:underline transition duration-300"
+          >
+            Quên mật khẩu?
+          </a>
+        </div>
       </div>
     </div>
   );
